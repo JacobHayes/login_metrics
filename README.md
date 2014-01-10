@@ -1,12 +1,15 @@
 login_metrics
 =============
 
-Some basic login metrics for Linux boxes:
+Some basic login metrics for RHEL/Fedora boxes:
 
 ```
 # Linux `lastb` parser to identify bad ssh login attempts. Collects
 # the unique username and hostname/IP stats of failed logins.
 ```
+
+Does not work on Debian/Ubuntu because logging to btmp was disabled: https://bugs.launchpad.net/ubuntu/+source/openssh/+bug/743858
+Could be reworked to work with /var/log/auth.log, but not prioratized.
 
 Current
 -------
