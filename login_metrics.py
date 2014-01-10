@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
 
-def input_gen(file=False):
-    if file == False:
-        print("Use subprocess to get `lastb` data")
-        #yield line
-    else: #Depreciated, yes in 1.0 already
-        with open(file) as f:
-            for line in f:
-                yield line
-#input_gen
+import subprocess
 
-def most_occur(metric):
-    return max(set(metric), key=metric.count)
-#most_occur
+def get_metric_params(parent):
+    metric = set(parent[0])
+    metric_num = len(metric)
+    percent_metric = 100*(metric_num/parent[1])
+    highest, highest_metric_num, highest_parent_num = highest_occur(parent[0], metric)
+    percent_metric_highest = 100*(highest_metric_num/metric_num)
+    percent_total_highest  = 100*(highest_parent_num/parent[1])
+
+    return(metric, metric_num, percent_metric, highest, highest_parent_num, percent_metric_highest, percent_total_highest)
+#get_metric_params
+
+def highest_occur(parent, metric):
+    highest = max(set(parent), key=parent.count)
+    metric_count = tuple(metric).count(highest)
+    parent_count = parent.count(highest)
+    return(highest, metric_count, parent_count)
+#highest_occur
+
+def lastb_gen():
+    lastb_out = subprocess.Popen("lastb", stdout=subprocess.PIPE).communicate()[0].decode("utf-8").split("\n")
+
+    for line in lastb_out:
+        yield parse(line)
+#lastb_gen
 
 def parse(line):
-
     sline = (line.split())
 
     y_value = None
@@ -25,47 +37,53 @@ def parse(line):
     except IndexError:
         pass
     finally:
-        return y_value
+        return(y_value)
 #parse
 
-t_reqs = list()
-for line in input_gen("lastb_out"):
-    pline = parse(line)
-    if pline is not None:
-        t_reqs.append(pline)
-t_reqs_num = len(t_reqs)
+def print_metric(metric, parent_total, metric_info):
+    attempt = metric_info[3] if type(metric_info[3]) != tuple else metric_info[3][0] + "@" + metric_info[3][1]
 
-# Requests
-u_reqs = set(t_reqs)
-u_reqs_num = len(u_reqs)
-max_u_ip = most_occur(t_reqs)
+    print("  - {}".format(metric))
+    print("      Total:  {}".format(parent_total))
+    print("      Unique: {}".format(metric_info[1]))
+    print("      Percent unique: {:.2f}%".format(metric_info[2]))
+    print("")
+    print("      Highest occurring: {} at {} attempts".format(attempt, metric_info[4]))
+    print("        % of uniques: {:.2f}%".format(metric_info[5]))
+    print("        % of total:   {:.2f}%".format(metric_info[6]))
+#print_metric
 
-print("Failed Login Requests")
-print("  Total:  {t}".format(t = t_reqs_num))
-print("  Unique: {u}".format(u = u_reqs_num))
-print("  Percent unique: {p:.2f}%".format(p = 100*(u_reqs_num/t_reqs_num)))
-print("  Highest occurring: {muip} at {muipc:.2f}%".format(muip = max_u_ip, muipc = 100*(t_reqs.count(max_u_ip)/len(t_reqs))))
+# Build master parent list; all failed login attempts
+tmp_atmpts = list()
+for line in lastb_gen():
+    if line is not None:
+        tmp_atmpts.append(line)
+atmpts = (tmp_atmpts, len(tmp_atmpts))
 
-print("")
+if atmpts[1] > 0:
+    print("SSH Failed Login Metrics")
 
-# Usernames
-u = [req[0] for req in t_reqs]
-u_u = set(u)
-max_u = most_occur(u)
+    # Create user parent list; all users (dups)
+    tmp_users = tuple(atmpt[0] for atmpt in atmpts[0])
+    users = (tmp_users, len(tmp_users))
 
-print("  Usernames")
-print("    Total:  {lun}".format(lun = len(u_u)))
-print("    Highest occurring: {mun} at {munc:.2f}%".format(mun = max_u, munc = 100*(u.count(max_u)/len(u))))
+    # Create IP parent list; all IPs (dups) 
+    tmp_ips = tuple(atmpt[1] for atmpt in atmpts[0])
+    ips = (tmp_ips, len(tmp_ips))
 
-print("")
-
-# IP Addresses
-ip = [req[1] for req in t_reqs]
-u_ip = set(ip)
-max_ip = most_occur(ip)
-
-print("  IPs")
-print("    Total: {lip}".format(lip = len(u_ip)))
-print("    Highest occurring: {mip} at {mipc:.2f}%".format(mip = max_ip, mipc = 100*(ip.count(max_ip)/len(ip))))
-
-print("")
+    # Attempts
+    # u_atmpts = get_metric_params(atmpts)
+      # May want this later b/c it contains the actual unique data
+    print_metric("Attempts", atmpts[1], get_metric_params(atmpts))
+    
+    # Users
+    # u_users = get_metric_params(users)
+      # May want this later b/c it contains the actual unique data
+    print_metric("Users", users[1], get_metric_params(users))
+    
+    # IPs
+    # u_ips = get_metric_params(ips)
+      # May want this later b/c it contains the actual unique data
+    print_metric("IPs", ips[1], get_metric_params(ips))
+else:
+    print("No failed logins")
