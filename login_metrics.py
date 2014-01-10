@@ -48,7 +48,7 @@ def print_metric(metric, parent_total, metric_info):
     print("      Unique: {}".format(metric_info[1]))
     print("      Percent unique: {:.2f}%".format(metric_info[2]))
     print("")
-    print("      Highest occurring: {} at {} attempts".format(attempt, metric_info[4]))
+    print("      Highest occurring: '{}' at {} attempts".format(attempt, metric_info[4]))
     print("        % of uniques: {:.2f}%".format(metric_info[5]))
     print("        % of total:   {:.2f}%".format(metric_info[6]))
 #print_metric
