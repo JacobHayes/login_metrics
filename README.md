@@ -53,9 +53,10 @@ SSH Failed Login Metrics
         % of total:   96.11%
 </pre>
 
-Future
-------
+Future/ToDo
+-----------
 
+- Add ability show all IP/Users/Combos (or whatever other metrics are supported down the line)
 - Add command line input file to read from instead of `lastb` (Useful for (old) log files)
 - Maybe make into a module for use in other monitoring software (of my own creation or other)
 - Add docstrings to all functions and include information for doctests
