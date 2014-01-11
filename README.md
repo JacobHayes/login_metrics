@@ -8,8 +8,7 @@ Some basic login metrics for RHEL/Fedora boxes:
 # the unique username and hostname/IP stats of failed logins.
 ```
 
-Does not work on Debian/Ubuntu because logging to btmp was disabled: https://bugs.launchpad.net/ubuntu/+source/openssh/+bug/743858
-Could be reworked to work with /var/log/auth.log, but not prioratized.
+Does not work on Debian/Ubuntu. See issue #1
 
 Current
 -------
