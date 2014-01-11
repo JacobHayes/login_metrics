@@ -55,6 +55,7 @@ SSH Failed Login Metrics
 Future/ToDo
 -----------
 
+- Add condensed output flag for use in login prompts/profiles
 - Add ability show all IP/Users/Combos (or whatever other metrics are supported down the line)
 - Add command line input file to read from instead of `lastb` (Useful for (old) log files)
 - Maybe make into a module for use in other monitoring software (of my own creation or other)
