@@ -8,7 +8,7 @@ Some basic login metrics for RHEL/Fedora boxes:
 # the unique username and hostname/IP stats of failed logins.
 ```
 
-Does not work on Debian/Ubuntu. See issue #1
+May not work on older Debian/Ubuntu systems. See issue #1
 
 Current
 -------
